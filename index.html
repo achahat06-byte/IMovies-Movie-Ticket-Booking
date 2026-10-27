@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMovies | Movie Ticket Booking</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{--bg:#0b0b12;--card:#171722;--red:#e50936;--muted:#aaa}
+body{background:var(--bg);color:white;font-family:Arial,sans-serif}
+.navbar{background:#11111a;border-bottom:1px solid #292936}
+.brand{font-size:27px;font-weight:900;color:var(--red)!important}
+.nav-link{color:white!important}
+.hero{padding:65px 25px;background:linear-gradient(90deg,#100d18 15%,#100d18cc 55%,#100d1870),url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=85') center/cover;border-radius:18px;margin-top:25px}
+.hero h1{font-size:clamp(38px,6vw,66px);font-weight:900}
+.accent{color:var(--red)}
+.btn-danger{background:var(--red);border-color:var(--red)}
+.btn-danger:hover{background:#b9072a}
+.section-title{font-weight:800;margin-bottom:20px}
+.movie-card{background:var(--card);border:1px solid #292936;border-radius:13px;overflow:hidden;height:100%;transition:.2s}
+.movie-card:hover{transform:translateY(-4px);border-color:var(--red)}
+.poster{width:100%;height:290px;object-fit:cover;background:#292936}
+.muted{color:var(--muted)}
+.tag{font-size:12px;color:#ff8ca5;background:#3b1723;padding:5px 9px;border-radius:20px}
+.seat{width:32px;height:29px;border:0;border-radius:6px 6px 3px 3px;background:#393947;color:white;font-size:11px;margin:4px}
+.seat.selected{background:#16b978;color:#071c13}
+.seat.booked{background:#7c2638;color:#fff;cursor:not-allowed}
+.screen{border-top:4px solid #ddd;box-shadow:0 -7px 18px #ffffff20;text-align:center;padding:12px;color:#aaa;margin:20px auto 28px;max-width:400px}
+footer{border-top:1px solid #292936;color:#aaa}
+.form-control,.form-select{background:#20202d;color:white;border-color:#393947}
+.form-control:focus,.form-select:focus{background:#20202d;color:white}
+.form-control::placeholder{color:#aaa}
+.modal-content{background:#171722;color:white}
+.nav-pills .nav-link.active{background:var(--red)}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+<div class="container">
+<a class="navbar-brand brand" href="#">iMOVIES<span class="text-white">.</span></a>
+<button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+<div class="collapse navbar-collapse" id="nav">
+<div class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+<a class="nav-link" href="#movies">Movies</a>
+<a class="nav-link" href="#bookings">My Bookings</a>
+<a class="nav-link" href="#favorites">Watchlist <span id="favCount"></span></a>
+<button class="btn btn-danger btn-sm mt-2 mt-lg-0" onclick="openAuth()">Login / Sign up</button>
+</div></div></div></nav>
+
+<main class="container">
+<section class="hero">
+<span class="tag">YOUR CINEMA, YOUR WAY</span>
+<h1 class="mt-3">Lights. Camera.<br><span class="accent">Book it.</span></h1>
+<p class="muted fs-5 mt-3">Discover the latest blockbusters. Choose your seats.<br>Make your next movie night unforgettable.</p>
+<a href="#movies" class="btn btn-danger btn-lg mt-2">Explore Movies →</a>
+</section>
+
+<section class="py-5" id="movies">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+<div><span class="accent">NOW SHOWING</span><h2 class="section-title mb-0">Find your next movie</h2></div>
+<input id="search" class="form-control" style="max-width:260px" placeholder="Search movies..." oninput="renderMovies()">
+</div>
+<div class="d-flex flex-wrap gap-2 mb-4" id="filters">
+<button class="btn btn-danger btn-sm" onclick="setGenre('All',this)">All</button>
+<button class="btn btn-outline-light btn-sm" onclick="setGenre('Action',this)">Action</button>
+<button class="btn btn-outline-light btn-sm" onclick="setGenre('Drama',this)">Drama</button>
+<button class="btn btn-outline-light btn-sm" onclick="setGenre('Sci-Fi',this)">Sci-Fi</button>
+<button class="btn btn-outline-light btn-sm" onclick="setGenre('Animation',this)">Animation</button>
+</div>
+<div class="row g-4" id="movieGrid"></div>
+</section>
+
+<section class="py-4" id="favorites">
+<h2 class="section-title">♥ My Watchlist</h2>
+<div class="row g-3" id="favoriteGrid"></div>
+</section>
+
+<section class="py-5" id="bookings">
+<h2 class="section-title">🎟 My Bookings</h2>
+<div id="bookingList" class="row g-3"></div>
+</section>
+
+<section class="pb-5" id="admin">
+<div class="card p-4" style="background:#171722;border-color:#292936">
+<h3>Admin Dashboard</h3>
+<p class="muted">Demo overview of booking activity on this browser.</p>
+<div class="row g-3">
+<div class="col-md-4"><div class="p-3 rounded" style="background:#242432"><div class="muted">Movies listed</div><h2 id="statMovies">0</h2></div></div>
+<div class="col-md-4"><div class="p-3 rounded" style="background:#242432"><div class="muted">Demo bookings</div><h2 id="statBookings">0</h2></div></div>
+<div class="col-md-4"><div class="p-3 rounded" style="background:#242432"><div class="muted">Watchlist items</div><h2 id="statFavorites">0</h2></div></div>
+</div>
+<p class="muted mt-3 mb-0">This is a demonstration dashboard, not a secured administrator console.</p>
+</div>
+</section>
+</main>
+
+<footer class="py-4"><div class="container d-flex flex-wrap justify-content-between gap-2">
+<strong class="brand">iMOVIES.</strong><span>Movie Ticket Booking Made Simple</span><span>© 2026 IMovies Project</span>
+</div></footer>
+
+<div class="modal fade" id="bookingModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+<div class="modal-header"><h5 id="bookingTitle">Book Tickets</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<p class="muted">Select your show date and time.</p>
+<label class="form-label">Date</label><input type="date" id="showDate" class="form-control mb-3">
+<label class="form-label">Theater</label><select id="theater" class="form-select mb-3"><option>IMovies Central</option><option>Galaxy Cinemas</option><option>CityPlex</option></select>
+<label class="form-label">Showtime</label><select id="showTime" class="form-select mb-3"><option>10:00 AM</option><option>1:30 PM</option><option>4:30 PM</option><option>7:30 PM</option><option>10:00 PM</option></select>
+<div class="screen">SCREEN THIS WAY</div>
+<div id="seatGrid" class="text-center"></div>
+<div class="d-flex flex-wrap justify-content-center gap-3 small mt-3"><span>⬜ Available</span><span>🟩 Selected</span><span>🟥 Booked</span></div>
+<hr><div class="d-flex justify-content-between"><span>Selected seats</span><strong id="selectedSeats">None</strong></div>
+<div class="d-flex justify-content-between mt-2"><span>Total amount</span><strong id="total">₹0</strong></div>
+<p class="muted small mt-3">Demo checkout only. No real payment is collected.</p>
+<button class="btn btn-danger w-100 mt-2" onclick="confirmBooking()">Confirm Demo Booking</button>
+</div></div></div></div>
+
+<div class="modal fade" id="authModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+<div class="modal-header"><h5>Welcome to IMovies</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<p class="muted">Enter your name to personalize this demo on this browser.</p>
+<input id="userName" class="form-control mb-3" placeholder="Your name">
+<button class="btn btn-danger w-100" onclick="loginDemo()">Continue</button>
+<p class="muted small mt-3">Demo profile only. This is not secure account authentication.</p>
+</div></div></div></div>
+
+<div class="modal fade" id="reviewModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+<div class="modal-header"><h5>Rate this movie</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+<div class="modal-body">
+<input id="reviewName" class="form-control mb-3" readonly>
+<select id="reviewRating" class="form-select mb-3"><option value="5">★★★★★ — 5</option><option value="4">★★★★ — 4</option><option value="3">★★★ — 3</option><option value="2">★★ — 2</option><option value="1">★ — 1</option></select>
+<textarea id="reviewText" class="form-control mb-3" placeholder="Write your review"></textarea>
+<button class="btn btn-danger w-100" onclick="submitReview()">Submit review</button>
+<div id="reviewResults" class="mt-3"></div>
+</div></div></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const movies=[
+{id:1,title:"Dune: Part Two",genre:"Sci-Fi",language:"English",duration:166,rating:8.5,cast:"Timothée Chalamet, Zendaya",date:"2024",price:220,poster:"https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",desc:"Paul Atreides unites with Chani and the Fremen while seeking revenge."},
+{id:2,title:"Interstellar",genre:"Sci-Fi",language:"English",duration:169,rating:8.7,cast:"Matthew McConaughey, Anne Hathaway",date:"2014",price:200,poster:"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",desc:"A team travels beyond this galaxy to find a future for humanity."},
+{id:3,title:"The Dark Knight",genre:"Action",language:"English",duration:152,rating:9.0,cast:"Christian Bale, Heath Ledger",date:"2008",price:180,poster:"https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",desc:"Batman faces his most dangerous opponent in Gotham City."},
+{id:4,title:"Spider-Man: Across the Spider-Verse",genre:"Animation",language:"English",duration:140,rating:8.6,cast:"Shameik Moore, Hailee Steinfeld",date:"2023",price:190,poster:"https://image.tmdb.org/t/p/w500/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",desc:"Miles Morales journeys across extraordinary alternate universes."},
+{id:5,title:"La La Land",genre:"Drama",language:"English",duration:128,rating:8.0,cast:"Ryan Gosling, Emma Stone",date:"2016",price:170,poster:"https://image.tmdb.org/t/p/w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",desc:"A musician and an aspiring actor fall in love in Los Angeles."},
+{id:6,title:"Inception",genre:"Action",language:"English",duration:148,rating:8.8,cast:"Leonardo DiCaprio, Joseph Gordon-Levitt",date:"2010",price:210,poster:"https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",desc:"A skilled thief enters dreams to carry out an extraordinary mission."}
+];
+const get=(key,def=[])=>{try{return JSON.parse(localStorage.getItem("imovies_"+key))??def}catch{return def}};
+const save=(key,val)=>localStorage.setItem("imovies_"+key,JSON.stringify(val));
+let genre="All",activeMovie=null,selected=[],currentUser=localStorage.getItem("imovies_user")||"",activeReview=null;
+const booked=()=>get("bookings");
+function setGenre(g,btn){genre=g;document.querySelectorAll("#filters button").forEach(b=>{b.className="btn btn-outline-light btn-sm"});btn.className="btn btn-danger btn-sm";renderMovies()}
+function renderMovies(){
+const q=document.getElementById("search").value.toLowerCase();
+const list=movies.filter(m=>(genre==="All"||m.genre===genre)&&m.title.toLowerCase().includes(q));
+document.getElementById("movieGrid").innerHTML=list.map(m=>`
+<div class="col-6 col-md-4 col-lg-4"><div class="movie-card">
+<img class="poster" src="${m.poster}" alt="${m.title}" onerror="this.style.display='none'">
+<div class="p-3"><div class="d-flex justify-content-between gap-2"><span class="tag">${m.genre}</span><span>⭐ ${m.rating}</span></div>
+<h5 class="mt-3">${m.title}</h5><p class="muted small mb-1">${m.language} · ${m.duration} min · ${m.date}</p>
+<p class="muted small">${m.cast}</p><p class="small">${m.desc}</p>
+<div class="d-flex justify-content-between align-items-center gap-2"><strong>₹${m.price}</strong>
+<button class="btn btn-danger btn-sm" onclick="openBooking(${m.id})">Book</button></div>
+<div class="d-flex flex-wrap gap-2 mt-3"><button class="btn btn-outline-light btn-sm" onclick="toggleFavorite(${m.id})">♡ Favorite</button><button class="btn btn-outline-light btn-sm" onclick="openReview(${m.id})">Review</button></div>
+</div></div></div>`).join("")||'<p class="muted">No movies found. Try another search.</p>';
+document.getElementById("statMovies").textContent=movies.length;
+}
+function toggleFavorite(id){let f=get("favorites");f=f.includes(id)?f.filter(x=>x!==id):[...f,id];save("favorites",f);renderFavorites()}
+function renderFavorites(){
+let f=get("favorites");
+document.getElementById("favCount").textContent=f.length?`(${f.length})`:"";
+document.getElementById("statFavorites").textContent=f.length;
+document.getElementById("favoriteGrid").innerHTML=f.map(id=>{let m=movies.find(x=>x.id===id);return m?`<div class="col-6 col-md-3"><div class="movie-card p-3"><strong>${m.title}</strong><p class="muted small mt-2">${m.genre} · ⭐ ${m.rating}</p><button class="btn btn-danger btn-sm" onclick="openBooking(${m.id})">Book</button> <button class="btn btn-outline-light btn-sm" onclick="toggleFavorite(${m.id})">Remove</button></div></div>`:""}).join("")||'<p class="muted">Your watchlist is empty. Add a movie using Favorite.</p>';
+}
+function openAuth(){new bootstrap.Modal(document.getElementById("authModal")).show()}
+function loginDemo(){let n=document.getElementById("userName").value.trim();if(!n)return alert("Enter your name.");currentUser=n;localStorage.setItem("imovies_user",n);bootstrap.Modal.getInstance(document.getElementById("authModal")).hide();alert("Welcome, "+n+"! Demo profile activated.");}
+function openBooking(id){
+activeMovie=movies.find(m=>m.id===id);selected=[];
+document.getElementById("bookingTitle").textContent="Book: "+activeMovie.title;
+document.getElementById("showDate").min=new Date().toISOString().slice(0,10);
+document.getElementById("showDate").value=new Date().toISOString().slice(0,10);
+renderSeats();new bootstrap.Modal(document.getElementById("bookingModal")).show();
+}
+function showKey(){return activeMovie.id+"_"+document.getElementById("showDate").value+"_"+document.getElementById("theater").value+"_"+document.getElementById("showTime").value}
+function renderSeats(){
+let taken=booked().filter(b=>b.showKey===showKey()).flatMap(b=>b.seats);
+let html="";
+for(let r=0;r<5;r++){html+=`<div>${String.fromCharCode(65+r)} `;
+for(let c=1;c<=8;c++){let s=String.fromCharCode(65+r)+c;let cls=taken.includes(s)?"booked":selected.includes(s)?"selected":"";
+html+=`<button class="seat ${cls}" ${taken.includes(s)?"disabled":""} onclick="toggleSeat('${s}')">${c}</button>`}
+html+="</div>"}
+document.getElementById("seatGrid").innerHTML=html;updateTotal();
+}
+function toggleSeat(s){selected=selected.includes(s)?selected.filter(x=>x!==s):[...selected,s];renderSeats()}
+function updateTotal(){document.getElementById("selectedSeats").textContent=selected.join(", ")||"None";document.getElementById("total").textContent="₹"+selected.length*(activeMovie?.price||0)}
+function confirmBooking(){
+if(!currentUser){alert("Please activate your demo profile using Login / Sign up first.");return}
+if(!selected.length){alert("Please select at least one seat.");return}
+let all=booked(),key=showKey();
+if(all.filter(b=>b.showKey===key).some(b=>b.seats.some(s=>selected.includes(s)))){alert("A selected seat has just been booked. Please choose again.");selected=[];renderSeats();return}
+let booking={id:"IM"+Date.now().toString().slice(-8),user:currentUser,movie:activeMovie.title,movieId:activeMovie.id,date:document.getElementById("showDate").value,theater:document.getElementById("theater").value,time:document.getElementById("showTime").value,seats:[...selected],amount:selected.length*activeMovie.price,status:"Demo confirmed",showKey:key,createdAt:new Date().toISOString()};
+all.push(booking);save("bookings",all);
+bootstrap.Modal.getInstance(document.getElementById("bookingModal")).hide();
+renderBookings();alert("Demo booking confirmed! Booking ID: "+booking.id+" | Amount: ₹"+booking.amount);
+}
+function renderBookings(){
+let b=booked().filter(x=>!currentUser||x.user===currentUser);
+document.getElementById("statBookings").textContent=booked().length;
+document.getElementById("bookingList").innerHTML=b.map(x=>`<div class="col-md-6"><div class="movie-card p-3"><span class="tag">${x.status}</span><h5 class="mt-3">${x.movie}</h5><p class="muted mb-1">${x.date} · ${x.time}</p><p class="muted mb-1">${x.theater}</p><p>Seats: <strong>${x.seats.join(", ")}</strong></p><p>Total: ₹${x.amount}</p><small class="muted">Booking ID: ${x.id}</small><div class="mt-3"><button class="btn btn-outline-light btn-sm" onclick="cancelBooking('${x.id}')">Cancel demo booking</button></div></div></div>`).join("")||'<p class="muted">No bookings yet. Choose a movie and reserve your seats.</p>';
+}
+function cancelBooking(id){if(!confirm("Cancel this demo booking?"))return;save("bookings",booked().filter(b=>b.id!==id));renderBookings()}
+function openReview(id){activeReview=movies.find(m=>m.id===id);document.getElementById("reviewName").value=activeReview.title;renderReviews();new bootstrap.Modal(document.getElementById("reviewModal")).show()}
+function submitReview(){let text=document.getElementById("reviewText").value.trim();if(!text)return alert("Please write a review.");let r=get("reviews");r.unshift({movieId:activeReview.id,movie:activeReview.title,user:currentUser||"Guest",rating:Number(document.getElementById("reviewRating").value),text});save("reviews",r);document.getElementById("reviewText").value="";renderReviews();alert("Demo review saved on this browser.")}
+function renderReviews(){let r=get("reviews").filter(x=>x.movieId===activeReview.id);document.getElementById("reviewResults").innerHTML="<h6>Reviews</h6>"+(r.map(x=>`<div class="border-top border-secondary py-2"><strong>${x.user}</strong> · ⭐ ${x.rating}/5<p class="mb-0">${x.text.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</p></div>`).join("")||'<p class="muted">No reviews yet.</p>')}
+document.getElementById("showDate").addEventListener("change",renderSeats);
+document.getElementById("theater").addEventListener("change",renderSeats);
+document.getElementById("showTime").addEventListener("change",renderSeats);
+renderMovies();renderFavorites();renderBookings();
+</script>
+</body>
+</html>
