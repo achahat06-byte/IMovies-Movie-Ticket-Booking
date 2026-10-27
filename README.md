@@ -1,16 +1,16 @@
-# 🎬 IMovies — Movie Ticket Booking Made Simple
+ IMovies — Movie Ticket Booking Made Simple
 
 **A modern, interactive movie ticket booking website built to make movie nights easier.**
 
 🔗 **Live Demo:** https://achahat06-byte.github.io/IMovies-Movie-Ticket-Booking/
 
-## 📌 Project Overview
+# Project Overview
 
 IMovies is a cinema-themed movie ticket booking web application that allows users to explore movies, discover showtimes, select seats, and manage their bookings through an attractive and user-friendly interface.
 
 The project focuses on providing a smooth browsing and booking experience with a responsive design and interactive features.
 
-## 🎯 Objectives
+ ## Objectives
 
 - Develop an intuitive online movie booking interface.
 - Display movie information, genres, ratings, and ticket prices.
@@ -18,7 +18,7 @@ The project focuses on providing a smooth browsing and booking experience with a
 - Provide watchlist and movie review features.
 - Create a responsive, visually appealing cinema experience.
 
-## ✨ Features
+### Features
 
 - 🎥 Movie listings and poster cards
 - 🔎 Movie search and genre filters
@@ -31,7 +31,7 @@ The project focuses on providing a smooth browsing and booking experience with a
 - 📱 Responsive layout
 - 💾 Browser-based storage for supported demo data
 
-## 🛠️ Technologies Used
+# Technologies Used
 
 - HTML5
 - CSS3
@@ -40,7 +40,7 @@ The project focuses on providing a smooth browsing and booking experience with a
 - Browser Local Storage
 - GitHub and GitHub Pages
 
-## 🚀 How to Use
+# How to Use
 
 1. Open the live demo using the link above.
 2. Browse the available movies.
@@ -49,7 +49,7 @@ The project focuses on providing a smooth browsing and booking experience with a
 5. Confirm the demo booking.
 6. Explore your bookings, watchlist, and review features.
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```text
 IMovies-Movie-Ticket-Booking/
@@ -57,11 +57,11 @@ IMovies-Movie-Ticket-Booking/
 └── README.md
 ```
 
-## ⚠️ Project Limitations
+## Project Limitations
 
 This version is a front-end demonstration. Booking and favorite data are stored locally in the browser where supported. It does not provide a production backend, shared real-time seat availability, secure user authentication, or actual payment processing.
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
 - React-based frontend
 - Node.js and Express REST API
@@ -72,7 +72,7 @@ This version is a front-end demonstration. Booking and favorite data are stored 
 - Admin tools for managing movies and shows
 - Booking confirmation notifications
 
-## 👩‍💻 Deployment
+## Deployment
 
 The project is published using GitHub Pages.
 
