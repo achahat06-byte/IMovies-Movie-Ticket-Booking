@@ -799,7 +799,57 @@ function renderReviews(){let r=get("reviews").filter(x=>x.movieId===activeReview
 document.getElementById("showDate").addEventListener("change",renderSeats);
 document.getElementById("theater").addEventListener("change",renderSeats);
 document.getElementById("showTime").addEventListener("change",renderSeats);
-renderMovies();renderFavorites();renderBookings();
+
+async function loadMoviesFromAPI() {
+  try {
+    const response = await fetch(
+      "https://imovies-backend-gaeq.onrender.com/api/movies"
+    );
+
+    if (!response.ok) {
+      throw new Error("Could not load movies from the server");
+    }
+
+    const data = await response.json();
+
+    if (!data.success || !Array.isArray(data.movies)) {
+      throw new Error("Invalid movie data received");
+    }
+
+    const posterByTitle = {
+      "Inception": "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
+      "Interstellar": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+      "The Dark Knight": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg"
+    };
+
+    movies = data.movies.map(movie => ({
+      id: movie._id,
+      title: movie.title,
+      genre: movie.genre,
+      language: movie.language || "Not specified",
+      duration: movie.duration || "Not specified",
+      rating: movie.rating || 0,
+      cast: "Cast details not added yet",
+      date: movie.releaseYear || "N/A",
+      price: 180,
+      poster: movie.posterUrl || posterByTitle[movie.title] || "",
+      desc: movie.description || "No description available."
+    }));
+
+    renderMovies();
+    renderFavorites();
+    renderBookings();
+
+  } catch (error) {
+    console.error("Movie API error:", error);
+    renderMovies();
+    renderFavorites();
+    renderBookings();
+  }
+}
+
+loadMoviesFromAPI();
+
 </script>
 </body>
 </html>
