@@ -745,7 +745,7 @@ document.getElementById("movieGrid").innerHTML=list.map(m=>`
 <p class="muted small">${m.cast}</p><p class="small">${m.desc}</p>
 <div class="d-flex justify-content-between align-items-center gap-2"><strong>₹${m.price}</strong>
 <button class="btn btn-danger btn-sm" onclick="openBooking('${m.id}')">Book</button></div>
-<div class="d-flex flex-wrap gap-2 mt-3"><button class="btn btn-outline-light btn-sm" onclick="toggleFavorite(${m.id})">♡ Favorite</button><button class="btn btn-outline-light btn-sm" onclick="openReview(${m.id})">Review</button></div>
+<div class="d-flex flex-wrap gap-2 mt-3"><button class="btn btn-outline-light btn-sm" onclick="toggleFavorite('${m.id}')">♡ Favorite</button><button class="btn btn-outline-light btn-sm" onclick="openReview(${m.id})">Review</button></div>
 </div></div></div>`).join("")||'<p class="muted">No movies found. Try another search.</p>';
 document.getElementById("statMovies").textContent=movies.length;
 }
@@ -754,7 +754,7 @@ function renderFavorites(){
 let f=get("favorites");
 document.getElementById("favCount").textContent=f.length?`(${f.length})`:"";
 document.getElementById("statFavorites").textContent=f.length;
-document.getElementById("favoriteGrid").innerHTML=f.map(id=>{let m=movies.find(x=>x.id===id);return m?`<div class="col-6 col-md-3"><div class="movie-card p-3"><strong>${m.title}</strong><p class="muted small mt-2">${m.genre} · ⭐ ${m.rating}</p><button class="btn btn-danger btn-sm" onclick="openBooking(${m.id})">Book</button> <button class="btn btn-outline-light btn-sm" onclick="toggleFavorite(${m.id})">Remove</button></div></div>`:""}).join("")||'<p class="muted">Your watchlist is empty. Add a movie using Favorite.</p>';
+document.getElementById("favoriteGrid").innerHTML=f.map(id=>{let m=movies.find(x=>x.id===id);return m?`<div class="col-6 col-md-3"><div class="movie-card p-3"><strong>${m.title}</strong><p class="muted small mt-2">${m.genre} · ⭐ ${m.rating}</p><button class="btn btn-danger btn-sm" onclick="openBooking(${m.id})">Book</button> <button class="btn btn-outline-light btn-sm" onclick="toggleFavorite('${m.id}')">Remove</button></div></div>`:""}).join("")||'<p class="muted">Your watchlist is empty. Add a movie using Favorite.</p>';
 }
 function openAuth(){new bootstrap.Modal(document.getElementById("authModal")).show()}
 function loginDemo(){let n=document.getElementById("userName").value.trim();if(!n)return alert("Enter your name.");currentUser=n;localStorage.setItem("imovies_user",n);bootstrap.Modal.getInstance(document.getElementById("authModal")).hide();alert("Welcome, "+n+"! Demo profile activated.");}
