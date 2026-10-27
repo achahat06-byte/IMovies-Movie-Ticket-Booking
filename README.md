@@ -1,4 +1,4 @@
- IMovies — Movie Ticket Booking Made Simple
+🎬 IMovies — Movie Ticket Booking Made Simple
 
 **A modern, interactive movie ticket booking website built to make movie nights easier.**
 
